@@ -1,0 +1,12 @@
+E:\Source\Repos\DynamoDb.Linq\DynamoDb.Linq\bin\Debug\net6.0\DynamoDb.Linq.deps.json
+E:\Source\Repos\DynamoDb.Linq\DynamoDb.Linq\bin\Debug\net6.0\DynamoDb.Linq.dll
+E:\Source\Repos\DynamoDb.Linq\DynamoDb.Linq\bin\Debug\net6.0\DynamoDb.Linq.pdb
+E:\Source\Repos\DynamoDb.Linq\DynamoDb.Linq\obj\Debug\net6.0\DynamoDb.Linq.csproj.AssemblyReference.cache
+E:\Source\Repos\DynamoDb.Linq\DynamoDb.Linq\obj\Debug\net6.0\DynamoDb.Linq.GeneratedMSBuildEditorConfig.editorconfig
+E:\Source\Repos\DynamoDb.Linq\DynamoDb.Linq\obj\Debug\net6.0\DynamoDb.Linq.AssemblyInfoInputs.cache
+E:\Source\Repos\DynamoDb.Linq\DynamoDb.Linq\obj\Debug\net6.0\DynamoDb.Linq.AssemblyInfo.cs
+E:\Source\Repos\DynamoDb.Linq\DynamoDb.Linq\obj\Debug\net6.0\DynamoDb.Linq.csproj.CoreCompileInputs.cache
+E:\Source\Repos\DynamoDb.Linq\DynamoDb.Linq\obj\Debug\net6.0\DynamoDb.Linq.dll
+E:\Source\Repos\DynamoDb.Linq\DynamoDb.Linq\obj\Debug\net6.0\refint\DynamoDb.Linq.dll
+E:\Source\Repos\DynamoDb.Linq\DynamoDb.Linq\obj\Debug\net6.0\DynamoDb.Linq.pdb
+E:\Source\Repos\DynamoDb.Linq\DynamoDb.Linq\obj\Debug\net6.0\ref\DynamoDb.Linq.dll
