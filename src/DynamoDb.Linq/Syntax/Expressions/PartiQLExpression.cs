@@ -21,10 +21,10 @@ public abstract class PartiQLExpression : Expression, IPrintableExpression
         => ExpressionType.Extension;
 
     public override Type Type { get; }
-    
+
     public CoreTypeMapping? TypeMapping { get; }
 
     public abstract void Print(ExpressionPrinter expressionPrinter);
-    
+
     protected override Expression VisitChildren(ExpressionVisitor visitor) => throw new NotImplementedException();
 }
