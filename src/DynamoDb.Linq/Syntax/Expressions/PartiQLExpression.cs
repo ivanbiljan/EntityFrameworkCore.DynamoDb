@@ -4,12 +4,17 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DynamoDb.Linq.Syntax.Expressions;
 
-public abstract class DynamoDbExpression : Expression, IPrintableExpression
+public abstract class PartiQLExpression : Expression, IPrintableExpression
 {
-    public DynamoDbExpression(Type type, CoreTypeMapping? typeMapping)
+    protected PartiQLExpression(Type type, CoreTypeMapping? typeMapping)
     {
         Type = type;
         TypeMapping = typeMapping;
+    }
+
+    protected PartiQLExpression()
+    {
+        throw new NotImplementedException();
     }
 
     public sealed override ExpressionType NodeType

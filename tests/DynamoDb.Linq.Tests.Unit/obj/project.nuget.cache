@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "g4W8B0jg+//4sE0fsrMgpIVobgjRm5r/Lsf5RXnpf1uRJDbjbI3cqcYJnIgC+xzrCZQu/s+ptLNuBPpggUcOig==",
+  "dgSpecHash": "Vki0/DjvFR8cmm1OoJtBN/em2EXJnxjo7rDnb3gmISxpvjRR1Xvh8+cgsBsGKIiilaLEtA8K0qKmY6ag6QkYWQ==",
   "success": true,
   "projectFilePath": "D:\\Source\\Repos\\DynamoDb.Linq\\tests\\DynamoDb.Linq.Tests.Unit\\DynamoDb.Linq.Tests.Unit.csproj",
   "expectedPackageFiles": [
@@ -95,7 +95,10 @@
     "C:\\Users\\Ivan\\.nuget\\packages\\xunit.core\\2.4.1\\xunit.core.2.4.1.nupkg.sha512",
     "C:\\Users\\Ivan\\.nuget\\packages\\xunit.extensibility.core\\2.4.1\\xunit.extensibility.core.2.4.1.nupkg.sha512",
     "C:\\Users\\Ivan\\.nuget\\packages\\xunit.extensibility.execution\\2.4.1\\xunit.extensibility.execution.2.4.1.nupkg.sha512",
-    "C:\\Users\\Ivan\\.nuget\\packages\\xunit.runner.visualstudio\\2.4.3\\xunit.runner.visualstudio.2.4.3.nupkg.sha512"
+    "C:\\Users\\Ivan\\.nuget\\packages\\xunit.runner.visualstudio\\2.4.3\\xunit.runner.visualstudio.2.4.3.nupkg.sha512",
+    "C:\\Users\\Ivan\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.7\\microsoft.netcore.app.ref.6.0.7.nupkg.sha512",
+    "C:\\Users\\Ivan\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.7\\microsoft.windowsdesktop.app.ref.6.0.7.nupkg.sha512",
+    "C:\\Users\\Ivan\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.7\\microsoft.aspnetcore.app.ref.6.0.7.nupkg.sha512"
   ],
   "logs": []
 }
