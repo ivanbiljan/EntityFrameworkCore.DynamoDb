@@ -8,12 +8,11 @@ public sealed class PartiQLConstantExpression : PartiQLExpression
 {
     private readonly ConstantExpression _constantExpression;
 
-    public PartiQLConstantExpression(
-        Type type,
-        CoreTypeMapping? coreTypeMapping,
-        ConstantExpression constantExpression) : base(type, coreTypeMapping)
+    public PartiQLConstantExpression(ConstantExpression constantExpression, CoreTypeMapping? coreTypeMapping) : base(
+        constantExpression.Type,
+        coreTypeMapping)
     {
-        _constantExpression = constantExpression ?? throw new ArgumentNullException(nameof(constantExpression));
+        _constantExpression = constantExpression;
     }
 
     public object? Value => _constantExpression.Value;

@@ -1,7 +1,7 @@
 ﻿namespace DynamoDb.Linq.Syntax;
 
 /// <summary>
-/// Represents a PartiQL query.
+///     Represents a PartiQL query.
 /// </summary>
 public sealed class PartiQLQuery
 {
