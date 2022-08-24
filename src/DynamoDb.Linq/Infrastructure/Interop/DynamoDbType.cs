@@ -1,4 +1,4 @@
-﻿namespace DynamoDb.Linq.Interop;
+﻿namespace DynamoDb.Linq.Infrastructure.Interop;
 
 /// <summary>
 ///     Represents data types supported in DynamoDb.

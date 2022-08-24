@@ -1,4 +1,4 @@
-﻿using DynamoDb.Linq.Interop;
+﻿using DynamoDb.Linq.Infrastructure.Interop;
 
 namespace DynamoDb.Linq.Syntax;
 
