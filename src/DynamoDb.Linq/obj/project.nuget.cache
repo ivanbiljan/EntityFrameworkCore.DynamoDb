@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "eEfrtUjZ3Rv3IsnyEbau07t5kDQQR3qr9/VeIPh0ARixN9NXO1Rm315ywIPM2nK0KuRgp5iUWDpe8a9BzzNzJA==",
+  "dgSpecHash": "ECA1xzGRGx59Bs5okoopWy9fjaa0XYiZW1JfuONf9nlzE/BC7tB19hnBwJreFPFJ+muwA/IWFjTSQ6SGLhRcOA==",
   "success": true,
   "projectFilePath": "D:\\Source\\Repos\\DynamoDb.Linq\\src\\DynamoDb.Linq\\DynamoDb.Linq.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Ivan\\.nuget\\packages\\awssdk.core\\3.7.12.25\\awssdk.core.3.7.12.25.nupkg.sha512",
+    "C:\\Users\\Ivan\\.nuget\\packages\\awssdk.dynamodbv2\\3.7.4.3\\awssdk.dynamodbv2.3.7.4.3.nupkg.sha512",
+    "C:\\Users\\Ivan\\.nuget\\packages\\jetbrains.annotations\\2022.1.0\\jetbrains.annotations.2022.1.0.nupkg.sha512",
     "C:\\Users\\Ivan\\.nuget\\packages\\microsoft.entityframeworkcore\\7.0.0-preview.7.22376.2\\microsoft.entityframeworkcore.7.0.0-preview.7.22376.2.nupkg.sha512",
     "C:\\Users\\Ivan\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\7.0.0-preview.7.22376.2\\microsoft.entityframeworkcore.abstractions.7.0.0-preview.7.22376.2.nupkg.sha512",
     "C:\\Users\\Ivan\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\7.0.0-preview.7.22376.2\\microsoft.entityframeworkcore.analyzers.7.0.0-preview.7.22376.2.nupkg.sha512",

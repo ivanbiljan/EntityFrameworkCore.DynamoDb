@@ -1,4 +1,5 @@
 ﻿using DynamoDb.Linq.Infrastructure;
+using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ public static class DependencyInjection
     /// </summary>
     /// <param name="serviceCollection">The <see cref="IServiceCollection"/> the services will be added to.</param>
     /// <returns>The modified <paramref name="serviceCollection"/>.</returns>
+    [UsedImplicitly]
     public static IServiceCollection AddEntityFrameworkDynamoDb(this IServiceCollection serviceCollection)
     {
         var builder = new EntityFrameworkServicesBuilder(serviceCollection);
