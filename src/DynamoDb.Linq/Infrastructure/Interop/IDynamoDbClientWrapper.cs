@@ -102,8 +102,16 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
             ProvisionedThroughput = provisionedThroughput
         };
 
-        var response = await dynamoDbClient.CreateTableAsync(request, cancellationToken);
+        try
+        {
 
-        return response.HttpStatusCode == HttpStatusCode.OK;
+            var response = await dynamoDbClient.CreateTableAsync(request, cancellationToken);
+
+            return response.HttpStatusCode == HttpStatusCode.OK;
+        }
+        catch (ResourceInUseException)
+        {
+            return true;
+        }
     }
 }
