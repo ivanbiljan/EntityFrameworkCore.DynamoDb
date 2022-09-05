@@ -43,7 +43,7 @@ internal sealed class DynamoDbContextOptionsExtension : IDbContextOptionsExtensi
     /// <summary>
     ///     Gets the endpoint DynamoDb will connect to.
     /// </summary>
-    public string? ServiceUrl { get; }
+    public string? ServiceUrl { get; private set; }
 
     /// <inheritdoc />
     public DbContextOptionsExtensionInfo Info => _extensionInfo ??= new DynamoDbContextOptionsExtensionInfo(this);
@@ -82,6 +82,20 @@ internal sealed class DynamoDbContextOptionsExtension : IDbContextOptionsExtensi
         var clone = Clone();
 
         clone.Region = region;
+
+        return clone;
+    }
+    
+    /// <summary>
+    ///     Configures the service endpoint URL.
+    /// </summary>
+    /// <param name="serviceUrl">The endpoint.</param>
+    /// <returns>The modified <see cref="DynamoDbContextOptionsExtension" /> instance.</returns>
+    public DynamoDbContextOptionsExtension WithServiceEndpoint(string serviceUrl)
+    {
+        var clone = Clone();
+
+        clone.ServiceUrl = serviceUrl;
 
         return clone;
     }
