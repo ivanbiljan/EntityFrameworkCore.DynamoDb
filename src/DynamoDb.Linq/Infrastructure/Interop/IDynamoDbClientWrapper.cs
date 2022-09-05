@@ -41,18 +41,21 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
     private readonly IAmazonDynamoDB _dynamoDbClient;
     private readonly IExecutionStrategy _executionStrategy;
 
-    public DynamoDbClientWrapper(IDynamoDbSingletonOptions options, IExecutionStrategy executionStrategy)
+    public DynamoDbClientWrapper(IDynamoDbSingletonOptions options, IExecutionStrategyFactory executionStrategyFactory)
     {
-        _dynamoDbClient = new AmazonDynamoDBClient(
-            options.AccessKey,
-            options.SecretKey,
-            new AmazonDynamoDBConfig
-            {
-                RegionEndpoint = RegionEndpoint.GetBySystemName(options.Region),
-                ServiceURL = options.ServiceUrl
-            });
-        
-        _executionStrategy = executionStrategy;
+        var clientConfig = new AmazonDynamoDBConfig
+        {
+            ServiceURL = options.ServiceUrl
+        };
+
+        if (options.Region is not null)
+        {
+            clientConfig.RegionEndpoint = RegionEndpoint.GetBySystemName(options.Region);
+        }
+
+        _dynamoDbClient = new AmazonDynamoDBClient(options.AccessKey, options.SecretKey, clientConfig);
+
+        _executionStrategy = executionStrategyFactory.Create();
     }
 
     public bool CreateTable(string tableName, DynamoDbKeySchema keySchema, ProvisionedThroughput? provisionedThroughput) 
@@ -64,10 +67,16 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
         ProvisionedThroughput? provisionedThroughput,
         CancellationToken cancellationToken = default)
     {
-        return _executionStrategy.ExecuteAsync(
-            (tableName, keySchema, provisionedThroughput, _dynamoDbClient),
-            CreateTableOnceAsync,
+        // TODO: figure out why this throws an NRE
+        // return _executionStrategy.ExecuteAsync(
+        //     (tableName, keySchema, provisionedThroughput, _dynamoDbClient),
+        //     CreateTableOnceAsync,
+        //     null,
+        //     cancellationToken);
+
+        return CreateTableOnceAsync(
             null,
+            (tableName, keySchema, provisionedThroughput, _dynamoDbClient),
             cancellationToken);
     }
 

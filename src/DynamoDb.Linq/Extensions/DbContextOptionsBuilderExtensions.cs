@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Options;
 
 namespace DynamoDb.Linq.Extensions;
 
@@ -10,45 +11,32 @@ public static class DbContextOptionsBuilderExtensions
 {
     public static DbContextOptionsBuilder UseDynamoDb(
         this DbContextOptionsBuilder dbContextOptionsBuilder,
-        string region,
         string accessKey,
-        string secretKey)
+        string secretKey,
+        Action<DynamoDbContextOptionsBuilder> options)
     {
         var extension = dbContextOptionsBuilder.Options.FindExtension<DynamoDbContextOptionsExtension>() ??
                         new DynamoDbContextOptionsExtension();
 
-        extension = extension.WithRegion(region).WithClientSecrets(accessKey, secretKey);
+        extension = extension.WithClientSecrets(accessKey, secretKey);
         
         ((IDbContextOptionsBuilderInfrastructure) dbContextOptionsBuilder).AddOrUpdateExtension(extension);
+
+        options(new DynamoDbContextOptionsBuilder(dbContextOptionsBuilder));
 
         return dbContextOptionsBuilder;
     }
 
     public static DbContextOptionsBuilder<TContext> UseDynamoDb<TContext>(
         this DbContextOptionsBuilder<TContext> dbContextOptionsBuilder,
-        string region,
         string accessKey,
-        string secretKey) where TContext : DbContext => (DbContextOptionsBuilder<TContext>)UseDynamoDb(
-        (DbContextOptionsBuilder)dbContextOptionsBuilder,
-        region,
-        accessKey,
-        secretKey);
-    
-    public static DbContextOptionsBuilder UseDynamoDb(this DbContextOptionsBuilder dbContextOptionsBuilder, string serviceUrl)
+        string secretKey,
+        Action<DynamoDbContextOptionsBuilder> options) where TContext : DbContext
     {
-        var extension = dbContextOptionsBuilder.Options.FindExtension<DynamoDbContextOptionsExtension>() ??
-                        new DynamoDbContextOptionsExtension();
-
-        extension = extension.WithServiceEndpoint(serviceUrl);
-        
-        ((IDbContextOptionsBuilderInfrastructure) dbContextOptionsBuilder).AddOrUpdateExtension(extension);
-
-        return dbContextOptionsBuilder;
+        return (DbContextOptionsBuilder<TContext>)UseDynamoDb(
+            (DbContextOptionsBuilder)dbContextOptionsBuilder,
+            accessKey,
+            secretKey,
+            options);
     }
-
-    public static DbContextOptionsBuilder<TContext> UseDynamoDb<TContext>(
-        this DbContextOptionsBuilder<TContext> dbContextOptionsBuilder,
-        string serviceUrl) where TContext : DbContext => (DbContextOptionsBuilder<TContext>)UseDynamoDb(
-        (DbContextOptionsBuilder)dbContextOptionsBuilder,
-        serviceUrl);
 }

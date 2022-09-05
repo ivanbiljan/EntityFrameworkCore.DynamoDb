@@ -1,13 +1,16 @@
 ﻿using System.Reflection;
 using DynamoDb.Linq.Infrastructure;
+using DynamoDb.Linq.Infrastructure.Interop;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,7 +24,7 @@ public static class DependencyInjection
     /// <param name="serviceCollection">The <see cref="IServiceCollection"/> the services will be added to.</param>
     /// <returns>The modified <paramref name="serviceCollection"/>.</returns>
     [UsedImplicitly]
-    public static IServiceCollection AddEntityFrameworkDynamoDb(this IServiceCollection serviceCollection)
+    internal static IServiceCollection AddEntityFrameworkDynamoDb(this IServiceCollection serviceCollection)
     {
         var builder = new EntityFrameworkServicesBuilder(serviceCollection);
 
@@ -29,7 +32,7 @@ public static class DependencyInjection
             .TryAdd<LoggingDefinitions, DynamoDbLoggingDefinitions>()
             .TryAdd<IDatabaseCreator, DynamoDbDatabaseCreator>()
             .TryAdd<IDatabase, DynamoDbDatabase>()
-            .TryAdd<IExecutionStrategyFactory, DynamoDbExecutionStrategyFactory>()
+            // .TryAdd<IExecutionStrategyFactory, DynamoDbExecutionStrategyFactory>()
             .TryAdd<IDbContextTransactionManager, DynamoDbTransactionManager>()
             .TryAdd<IModelValidator, DynamoDbModelValidator>()
             // .TryAdd<IProviderConventionSetBuilder, DynamoDbConventionSetBuilder>()
@@ -47,6 +50,7 @@ public static class DependencyInjection
             map =>
             {
                 map.TryAddSingleton<IDynamoDbSingletonOptions, DynamoDbSingletonOptions>();
+                map.TryAddSingleton<IDynamoDbClientWrapper, DynamoDbClientWrapper>();
             });
 
         builder.TryAddCoreServices();
@@ -57,8 +61,51 @@ public static class DependencyInjection
 
 public class DynamoDbTypeMappingSource : TypeMappingSource
 {
+    public class DynamoDbTypeMapping : CoreTypeMapping
+    {
+        public DynamoDbTypeMapping(
+            Type clrType,
+            ValueComparer? comparer = null,
+            ValueComparer? keyComparer = null)
+            : base(
+                new CoreTypeMappingParameters(
+                    clrType,
+                    converter: null,
+                    comparer,
+                    keyComparer))
+        {
+        }
+
+        protected DynamoDbTypeMapping(CoreTypeMappingParameters parameters)
+            : base(parameters)
+        {
+        }
+
+        public override CoreTypeMapping Clone(ValueConverter? converter)
+            => new DynamoDbTypeMapping(Parameters.WithComposedConverter(converter));
+    }
+
     public DynamoDbTypeMappingSource(TypeMappingSourceDependencies dependencies) : base(dependencies)
     {
+    }
+
+    protected override CoreTypeMapping? FindMapping(in TypeMappingInfo mappingInfo)
+    {
+        return FindPrimitiveMapping(mappingInfo);
+    }
+    
+    private static CoreTypeMapping? FindPrimitiveMapping(in TypeMappingInfo mappingInfo)
+    {
+        var clrType = mappingInfo.ClrType!;
+        if ((clrType.IsValueType
+             && clrType != typeof(Guid)
+             && !clrType.IsEnum)
+            || clrType == typeof(string))
+        {
+            return new DynamoDbTypeMapping(clrType);
+        }
+
+        return null;
     }
 }
 
@@ -71,7 +118,6 @@ public class DynamoDbModelValidator : IModelValidator
 {
     public void Validate(IModel model, IDiagnosticsLogger<DbLoggerCategory.Model.Validation> logger)
     {
-        throw new NotImplementedException();
     }
 }
 
@@ -107,7 +153,28 @@ public class DynamoDbTransactionManager : IDbContextTransactionManager
 
 public class DynamoDbExecutionStrategyFactory : IExecutionStrategyFactory
 {
-    public IExecutionStrategy Create() => throw new NotImplementedException();
+    public class DynamoDbExecutionStrategy : ExecutionStrategy
+    {
+        public DynamoDbExecutionStrategy(DbContext context, int maxRetryCount, TimeSpan maxRetryDelay) : base(context, maxRetryCount, maxRetryDelay)
+        {
+        }
+
+        public DynamoDbExecutionStrategy(ExecutionStrategyDependencies dependencies, int maxRetryCount, TimeSpan maxRetryDelay) : base(dependencies, maxRetryCount, maxRetryDelay)
+        {
+        }
+
+        protected override bool ShouldRetryOn(Exception exception) => false;
+    }
+
+    private readonly ExecutionStrategyDependencies _executionStrategyDependencies;
+
+    public DynamoDbExecutionStrategyFactory(ExecutionStrategyDependencies executionStrategyDependencies)
+    {
+        _executionStrategyDependencies = executionStrategyDependencies;
+    }
+
+    public IExecutionStrategy Create() =>
+        new DynamoDbExecutionStrategy(_executionStrategyDependencies, 0, TimeSpan.Zero);
 }
 
 public sealed class DynamoDbLoggingDefinitions : LoggingDefinitions

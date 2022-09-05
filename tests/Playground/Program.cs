@@ -6,9 +6,14 @@ using Microsoft.EntityFrameworkCore;
 Console.WriteLine("Hello, World!");
 
 var optionsBuilder = new DbContextOptionsBuilder<Context>()
-    .UseDynamoDb("https://localhost:8000");
+    .UseDynamoDb("xo3pwi", "sf7wz",
+        options =>
+        {
+            options.WithServiceUrl("http://localhost:8000");
+        });
+
 var context = new Context(optionsBuilder.Options);
-context.Database.EnsureCreated();
+await context.Database.EnsureCreatedAsync();
 
 public class Context : DbContext
 {
@@ -18,13 +23,20 @@ public class Context : DbContext
     }
     
     public DbSet<Entity> Entities => Set<Entity>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Entity>().ToDynamoDbTable("entity");
+        
+        base.OnModelCreating(modelBuilder);
+    }
 }
 
 public class Entity
 {
-    public string FirstName { get; set; }
+    public string pk { get; set; }
 
-    public string LastName { get; set; }
+    public string sk { get; set; }
 
     public int Age { get; set; }
 }

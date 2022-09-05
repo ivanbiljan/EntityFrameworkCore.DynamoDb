@@ -18,6 +18,13 @@ public sealed class DynamoDbContextOptionsBuilder
     /// <param name="region">The region.</param>
     /// <returns>The modified <see cref="DynamoDbContextOptionsBuilder"/>.</returns>
     public DynamoDbContextOptionsBuilder WithRegion(string region) => WithOption(o => o.WithRegion(region));
+    
+    /// <summary>
+    /// Configures the service endpoint.
+    /// </summary>
+    /// <param name="serviceUrl">The endpoint.</param>
+    /// <returns>The modified <see cref="DynamoDbContextOptionsBuilder"/>.</returns>
+    public DynamoDbContextOptionsBuilder WithServiceUrl(string serviceUrl) => WithOption(o => o.WithServiceEndpoint(serviceUrl));
 
     /// <summary>
     /// Configures the AWS keys.

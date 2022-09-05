@@ -83,7 +83,7 @@ public sealed class DynamoDbDatabaseCreator : IDatabaseCreator
         var tableNameToEntityTypeMap = new Dictionary<string, List<IEntityType>>();
         
         // Discover all non-owned entities/document roots
-        foreach (var entityType in model.GetEntityTypes().Where(e => e.FindPrimaryKey() != null))
+        foreach (var entityType in model.GetEntityTypes())
         {
             var tableName = entityType.GetTableName();
             if (tableName is null)
