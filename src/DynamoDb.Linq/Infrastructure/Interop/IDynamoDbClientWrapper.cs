@@ -2,14 +2,13 @@
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-using DynamoDb.Linq.Infrastructure.Interop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DynamoDb.Linq.Infrastructure.Interop;
 
 /// <summary>
-/// Specifies a contract for a wrapper around Amazon's DynamoDb SDK.
+/// Specifies a contract for an internal wrapper around Amazon's DynamoDb SDK. This class wraps the core APIs required for DynamoDb interop.
 /// </summary>
 public interface IDynamoDbClientWrapper
 {
@@ -20,7 +19,7 @@ public interface IDynamoDbClientWrapper
     /// <param name="keySchema"></param>
     /// <param name="provisionedThroughput"></param>
     /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
-    bool CreateTable(string tableName, DynamoDbKeySchema keySchema, ProvisionedThroughput provisionedThroughput);
+    bool CreateTable(string tableName, DynamoDbKeySchema keySchema, ProvisionedThroughput? provisionedThroughput);
 
     /// <summary>
     /// Creates a new table with the specified name.
@@ -33,7 +32,7 @@ public interface IDynamoDbClientWrapper
     Task<bool> CreateTableAsync(
         string tableName,
         DynamoDbKeySchema keySchema,
-        ProvisionedThroughput provisionedThroughput,
+        ProvisionedThroughput? provisionedThroughput,
         CancellationToken cancellationToken = default);
 }
 
@@ -56,13 +55,13 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
         _executionStrategy = executionStrategy;
     }
 
-    public bool CreateTable(string tableName, DynamoDbKeySchema keySchema, ProvisionedThroughput provisionedThroughput) 
+    public bool CreateTable(string tableName, DynamoDbKeySchema keySchema, ProvisionedThroughput? provisionedThroughput) 
         => CreateTableAsync(tableName, keySchema, provisionedThroughput).GetAwaiter().GetResult();
 
     public Task<bool> CreateTableAsync(
         string tableName,
         DynamoDbKeySchema keySchema,
-        ProvisionedThroughput provisionedThroughput,
+        ProvisionedThroughput? provisionedThroughput,
         CancellationToken cancellationToken = default)
     {
         return _executionStrategy.ExecuteAsync(
@@ -74,7 +73,7 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
 
     private static async Task<bool> CreateTableOnceAsync(
         DbContext? _,
-        (string tableName, DynamoDbKeySchema keySchema, ProvisionedThroughput provisionedThroughput, IAmazonDynamoDB
+        (string tableName, DynamoDbKeySchema keySchema, ProvisionedThroughput? provisionedThroughput, IAmazonDynamoDB
             dynamoDbClient) state,
         CancellationToken cancellationToken = default)
     {

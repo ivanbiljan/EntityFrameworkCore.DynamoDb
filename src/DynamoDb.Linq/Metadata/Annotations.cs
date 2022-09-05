@@ -34,4 +34,9 @@ internal static class Annotations
     /// Gets the name of the annotation that stores the sort key identifier.
     /// </summary>
     public const string SortKey = DynamoDbAnnotationPrefix + nameof(SortKey);
+
+    /// <summary>
+    /// Gets the name of the annotation that stores the DynamoDb attribute name of an entity property.
+    /// </summary>
+    public const string DynamoDbAttribute = DynamoDbAnnotationPrefix + nameof(DynamoDbAttribute);
 }
