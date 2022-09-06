@@ -13,11 +13,11 @@ public static class Constants
         /// <summary>
         /// Gets the default store name for a property that represents the partition key in a CLR model.
         /// </summary>
-        public const string DefaultPartitionKeyAttributeName = "pk";
+        public const string DefaultPartitionKeyAttributeName = "PartitionKey";
 
         /// <summary>
         /// Gets the default store name for a property that represents the sort key in a CLR model.
         /// </summary>
-        public const string DefaultSortKeyAttributeName = "sk";
+        public const string DefaultSortKeyAttributeName = "SortKey";
     }
 }
