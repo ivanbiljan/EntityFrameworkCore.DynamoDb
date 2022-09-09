@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 Console.WriteLine("Hello, World!");
 
 var optionsBuilder = new DbContextOptionsBuilder<Context>()
-    .UseDynamoDb("xo3pwi", "sf7wz",
+    .UseDynamoDb("9qbibn", "od7t6m",
         options =>
         {
             options.WithServiceUrl("http://localhost:8000");
@@ -34,9 +34,9 @@ public class Context : DbContext
 
 public class Entity
 {
-    public string pk { get; set; }
+    public string PartitionKey { get; set; }
 
-    public string sk { get; set; }
+    public string SortKey { get; set; }
 
     public int Age { get; set; }
 }

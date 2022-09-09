@@ -28,7 +28,7 @@ public static class DependencyInjection
             .TryAdd<LoggingDefinitions, DynamoDbLoggingDefinitions>()
             .TryAdd<IDatabaseCreator, DynamoDbDatabaseCreator>()
             .TryAdd<IDatabase, DynamoDbDatabase>()
-            // .TryAdd<IExecutionStrategyFactory, DynamoDbExecutionStrategyFactory>()
+            .TryAdd<IExecutionStrategyFactory, DynamoDbExecutionStrategyFactory>()
             .TryAdd<IDbContextTransactionManager, DynamoDbTransactionManager>()
             .TryAdd<IModelValidator, DynamoDbModelValidator>()
             // .TryAdd<IProviderConventionSetBuilder, DynamoDbConventionSetBuilder>()

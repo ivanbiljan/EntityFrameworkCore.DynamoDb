@@ -20,7 +20,7 @@ internal sealed class DynamoDbContextOptionsExtension : IDbContextOptionsExtensi
     private DynamoDbContextOptionsExtension(DynamoDbContextOptionsExtension other)
     {
         Region = other.Region;
-        AccessKey = other.Region;
+        AccessKey = other.AccessKey;
         SecretKey = other.SecretKey;
         ServiceUrl = other.ServiceUrl;
     }
