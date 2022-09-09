@@ -92,14 +92,23 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
             new(keySchema.PartitionKey.Name, KeyType.HASH),
         };
 
+        var attributeDefinitions = new List<AttributeDefinition>
+        {
+            new(keySchema.PartitionKey.Name, ScalarAttributeType.S)
+        };
+
         if (keySchema.SortKey is not null)
         {
             keyElements.Add(new KeySchemaElement(keySchema.SortKey.Name, KeyType.RANGE));
+            attributeDefinitions.Add(new AttributeDefinition(keySchema.SortKey.Name, ScalarAttributeType.S));
         }
 
+        // TODO: types
         var request = new CreateTableRequest(tableName, keyElements)
         {
-            ProvisionedThroughput = provisionedThroughput
+            BillingMode = provisionedThroughput is null ? BillingMode.PAY_PER_REQUEST : BillingMode.PROVISIONED,
+            ProvisionedThroughput = provisionedThroughput,
+            AttributeDefinitions = attributeDefinitions
         };
 
         try
