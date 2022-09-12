@@ -34,7 +34,8 @@ public sealed class DynamoDbDatabaseCreator : IDatabaseCreator
     public DynamoDbDatabaseCreator(
         IDynamoDbClientWrapper dynamoDbClientWrapper,
         IDesignTimeModel designTimeModel,
-        IDatabase database)
+        IDatabase database,
+        ExecutionStrategyDependencies dependencies)
     {
         _dynamoDbClientWrapper = dynamoDbClientWrapper;
         _designTimeModel = designTimeModel;

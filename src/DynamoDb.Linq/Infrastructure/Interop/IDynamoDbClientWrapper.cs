@@ -68,16 +68,16 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
         CancellationToken cancellationToken = default)
     {
         // TODO: figure out why this throws an NRE
-        // return _executionStrategy.ExecuteAsync(
-        //     (tableName, keySchema, provisionedThroughput, _dynamoDbClient),
-        //     CreateTableOnceAsync,
-        //     null,
-        //     cancellationToken);
-
-        return CreateTableOnceAsync(
-            null,
+        return _executionStrategy.ExecuteAsync(
             (tableName, keySchema, provisionedThroughput, _dynamoDbClient),
+            CreateTableOnceAsync,
+            null,
             cancellationToken);
+
+        // return CreateTableOnceAsync(
+        //     null,
+        //     (tableName, keySchema, provisionedThroughput, _dynamoDbClient),
+        //     cancellationToken);
     }
 
     private static async Task<bool> CreateTableOnceAsync(
@@ -120,7 +120,7 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
         }
         catch (ResourceInUseException)
         {
-            return true;
+            return false;
         }
     }
 }
