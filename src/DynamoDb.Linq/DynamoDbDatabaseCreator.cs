@@ -2,6 +2,7 @@
 using Amazon.DynamoDBv2.Model;
 using DynamoDb.Linq.Extensions;
 using DynamoDb.Linq.Infrastructure.Interop;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -28,6 +29,7 @@ internal sealed class DynamoTableDescriptor
 public sealed class DynamoDbDatabaseCreator : IDatabaseCreator
 {
     private readonly IDatabase _database;
+    private readonly IUpdateAdapterFactory _updateAdapterFactory;
     private readonly IDesignTimeModel _designTimeModel;
     private readonly IDynamoDbClientWrapper _dynamoDbClientWrapper;
 
@@ -35,11 +37,12 @@ public sealed class DynamoDbDatabaseCreator : IDatabaseCreator
         IDynamoDbClientWrapper dynamoDbClientWrapper,
         IDesignTimeModel designTimeModel,
         IDatabase database,
-        ExecutionStrategyDependencies dependencies)
+        IUpdateAdapterFactory updateAdapterFactory)
     {
         _dynamoDbClientWrapper = dynamoDbClientWrapper;
         _designTimeModel = designTimeModel;
         _database = database;
+        _updateAdapterFactory = updateAdapterFactory;
     }
 
     public bool CanConnect() => throw new NotSupportedException();
@@ -54,6 +57,8 @@ public sealed class DynamoDbDatabaseCreator : IDatabaseCreator
             var keySchema = new DynamoDbKeySchema(table.PartitionKey, table.SortKey);
             created |= _dynamoDbClientWrapper.CreateTable(table.Name, keySchema, table.Throughput);
         }
+        
+        Seed();
 
         return created;
     }
@@ -72,6 +77,8 @@ public sealed class DynamoDbDatabaseCreator : IDatabaseCreator
             var keySchema = new DynamoDbKeySchema(table.PartitionKey, table.SortKey);
             created |= await _dynamoDbClientWrapper.CreateTableAsync(table.Name, keySchema, table.Throughput, cancellationToken);
         }
+
+        await SeedAsync(cancellationToken);
 
         return created;
     }
@@ -147,6 +154,35 @@ public sealed class DynamoDbDatabaseCreator : IDatabaseCreator
                 sortKeyProperty.GetDynamoDbAttributeName(),
                 dynamoDbType,
                 DynamoDbKeyType.Sort);
+        }
+    }
+
+    private void Seed()
+    {
+        var updateAdapter = CreateStandaloneSeedUpdateAdapter();
+
+        _database.SaveChanges(updateAdapter.GetEntriesToSave());
+    }
+
+    private async Task SeedAsync(CancellationToken cancellationToken = default)
+    {
+        var updateAdapter = CreateStandaloneSeedUpdateAdapter();
+
+        await _database.SaveChangesAsync(updateAdapter.GetEntriesToSave(), cancellationToken);
+    }
+
+    private IUpdateAdapter CreateStandaloneSeedUpdateAdapter()
+    {
+        var updateAdapter = _updateAdapterFactory.CreateStandalone();
+        foreach (var entityType in _designTimeModel.Model.GetEntityTypes())
+        {
+            foreach (var seedData in entityType.GetSeedData())
+            {
+                updateAdapter.Model.FindEntityType(entityType.Name);
+
+                var entry = updateAdapter.CreateEntry(seedData, entityType);
+                entry.EntityState = EntityState.Modified;
+            }
         }
     }
 }
