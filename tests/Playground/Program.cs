@@ -13,7 +13,7 @@ var optionsBuilder = new DbContextOptionsBuilder<Context>()
         });
 
 var context = new Context(optionsBuilder.Options);
-await context.Database.EnsureCreatedAsync();
+context.Database.EnsureCreated();
 
 public class Context : DbContext
 {
@@ -26,7 +26,14 @@ public class Context : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Entity>().ToDynamoDbTable("entity");
+        modelBuilder.Entity<Entity>().ToDynamoDbTable("entity").HasKey(e => e.PartitionKey);
+        modelBuilder.Entity<Entity>().HasData(
+            new Entity
+            {
+                PartitionKey = "pk1",
+                SortKey = "sk2",
+                Age = 10
+            });
         
         base.OnModelCreating(modelBuilder);
     }

@@ -4,8 +4,10 @@ using DynamoDb.Linq.Infrastructure.Interop;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,15 +33,15 @@ public static class DependencyInjection
             .TryAdd<IExecutionStrategyFactory, DynamoDbExecutionStrategyFactory>()
             .TryAdd<IDbContextTransactionManager, DynamoDbTransactionManager>()
             .TryAdd<IModelValidator, DynamoDbModelValidator>()
-            // .TryAdd<IProviderConventionSetBuilder, DynamoDbConventionSetBuilder>()
-            // .TryAdd<IValueGeneratorSelector, DynamoDbValueGeneratorSelector>()
+            .TryAdd<IProviderConventionSetBuilder, DynamoDbConventionSetBuilder>()
+            .TryAdd<IValueGeneratorSelector, DynamoDbValueGeneratorSelector>()
             .TryAdd<IQueryContextFactory, DynamoDbQueryContextFactory>()
             .TryAdd<ITypeMappingSource, DynamoDbTypeMappingSource>()
-            // .TryAdd<IQueryableMethodTranslatingExpressionVisitorFactory, DynamoDbQueryableMethodTranslatingExpressionVisitorFactory>()
-            // .TryAdd<IShapedQueryCompilingExpressionVisitorFactory, DynamoDbShapedQueryCompilingExpressionVisitorFactory>()
-            // .TryAdd<IQueryTranslationPreprocessorFactory, DynamoDbQueryTranslationPreprocessorFactory>()
-            // .TryAdd<IQueryCompilationContextFactory, DynamoDbQueryCompilationContextFactory>()
-            // .TryAdd<IQueryTranslationPostprocessorFactory, DynamoDbQueryTranslationPostprocessorFactory>()
+            .TryAdd<IQueryableMethodTranslatingExpressionVisitorFactory, DynamoDbQueryableMethodTranslatingExpressionVisitorFactory>()
+            .TryAdd<IShapedQueryCompilingExpressionVisitorFactory, DynamoDbShapedQueryCompilingExpressionVisitorFactory>()
+            .TryAdd<IQueryTranslationPreprocessorFactory, DynamoDbQueryTranslationPreprocessorFactory>()
+            .TryAdd<IQueryCompilationContextFactory, DynamoDbQueryCompilationContextFactory>()
+            .TryAdd<IQueryTranslationPostprocessorFactory, DynamoDbQueryTranslationPostprocessorFactory>()
             .TryAdd<ISingletonOptions, IDynamoDbSingletonOptions>(provider => provider.GetRequiredService<IDynamoDbSingletonOptions>());
 
         builder.TryAddProviderSpecificServices(
@@ -52,5 +54,50 @@ public static class DependencyInjection
         builder.TryAddCoreServices();
 
         return serviceCollection;
+    }
+}
+
+internal class DynamoDbQueryTranslationPostprocessorFactory : QueryTranslationPostprocessorFactory
+{
+    public DynamoDbQueryTranslationPostprocessorFactory(QueryTranslationPostprocessorDependencies dependencies) : base(dependencies)
+    {
+    }
+}
+
+internal class DynamoDbQueryCompilationContextFactory : QueryCompilationContextFactory
+{
+    public DynamoDbQueryCompilationContextFactory(QueryCompilationContextDependencies dependencies) : base(dependencies)
+    {
+    }
+}
+
+internal class DynamoDbQueryTranslationPreprocessorFactory : QueryTranslationPreprocessorFactory
+{
+    public DynamoDbQueryTranslationPreprocessorFactory(QueryTranslationPreprocessorDependencies dependencies) : base(dependencies)
+    {
+    }
+}
+
+internal class DynamoDbShapedQueryCompilingExpressionVisitorFactory : IShapedQueryCompilingExpressionVisitorFactory
+{
+    public ShapedQueryCompilingExpressionVisitor Create(QueryCompilationContext queryCompilationContext) => throw new NotImplementedException();
+}
+
+internal class DynamoDbQueryableMethodTranslatingExpressionVisitorFactory : IQueryableMethodTranslatingExpressionVisitorFactory
+{
+    public QueryableMethodTranslatingExpressionVisitor Create(QueryCompilationContext queryCompilationContext) => throw new NotImplementedException();
+}
+
+internal class DynamoDbValueGeneratorSelector : ValueGeneratorSelector
+{
+    public DynamoDbValueGeneratorSelector(ValueGeneratorSelectorDependencies dependencies) : base(dependencies)
+    {
+    }
+}
+
+internal class DynamoDbConventionSetBuilder : ProviderConventionSetBuilder
+{
+    public DynamoDbConventionSetBuilder(ProviderConventionSetBuilderDependencies dependencies) : base(dependencies)
+    {
     }
 }

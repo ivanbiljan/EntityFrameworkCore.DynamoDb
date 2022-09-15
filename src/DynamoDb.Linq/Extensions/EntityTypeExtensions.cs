@@ -11,13 +11,13 @@ public static class EntityTypeExtensions
     /// </summary>
     /// <param name="entityType">The entity type.</param>
     /// <returns>The name of the table if configured; otherwise, <see langword="null"/>.</returns>
-    public static string? GetTableName(this IReadOnlyEntityType entityType)
+    public static string GetTableName(this IReadOnlyEntityType entityType)
     {
         while (true)
         {
             if (entityType.BaseType is null)
             {
-                return (string?)entityType[Annotations.TableName];
+                return (string?)entityType[Annotations.TableName] ?? entityType.Name;
             }
 
             entityType = entityType.GetRootType();
