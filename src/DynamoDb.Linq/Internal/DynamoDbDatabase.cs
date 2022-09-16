@@ -24,7 +24,22 @@ internal sealed class DynamoDbDatabase : Database
         return entries.Count(Save);
     }
 
-    public override Task<int> SaveChangesAsync(IList<IUpdateEntry> entries, CancellationToken cancellationToken = new CancellationToken()) => throw new NotImplementedException();
+    public override async Task<int> SaveChangesAsync(
+        IList<IUpdateEntry> entries,
+        CancellationToken cancellationToken = default)
+    {
+        var affectedRows = 0;
+
+        foreach (var entry in entries)
+        {
+            if (await SaveAsync(entry))
+            {
+                ++affectedRows;
+            }
+        }
+
+        return affectedRows;
+    }
 
     private bool Save(IUpdateEntry entry)
     {
@@ -35,7 +50,9 @@ internal sealed class DynamoDbDatabase : Database
             case EntityState.Unchanged:
                 break;
             case EntityState.Deleted:
-                break;
+            {
+                return _dynamoDbClientWrapper.DeleteDocument(entry);
+            }
             case EntityState.Modified:
             {
                 var entryAsDocument = ConvertEntryToDynamoDocument(entry);
@@ -47,6 +64,37 @@ internal sealed class DynamoDbDatabase : Database
                 var entryAsDocument = ConvertEntryToDynamoDocument(entry);
 
                 return _dynamoDbClientWrapper.Upsert(entry.EntityType.GetTableName(), entryAsDocument);
+            }
+            default:
+                return false;
+        }
+
+        return false;
+    }
+    
+    private async Task<bool> SaveAsync(IUpdateEntry entry)
+    {
+        switch (entry.EntityState)
+        {
+            case EntityState.Detached:
+                break;
+            case EntityState.Unchanged:
+                break;
+            case EntityState.Deleted:
+            {
+                return await _dynamoDbClientWrapper.DeleteDocumentAsync(entry);
+            }
+            case EntityState.Modified:
+            {
+                var entryAsDocument = ConvertEntryToDynamoDocument(entry);
+
+                return await _dynamoDbClientWrapper.UpsertAsync(entry.EntityType.GetTableName(), entryAsDocument);
+            }
+            case EntityState.Added:
+            {
+                var entryAsDocument = ConvertEntryToDynamoDocument(entry);
+
+                return await _dynamoDbClientWrapper.UpsertAsync(entry.EntityType.GetTableName(), entryAsDocument);
             }
             default:
                 return false;

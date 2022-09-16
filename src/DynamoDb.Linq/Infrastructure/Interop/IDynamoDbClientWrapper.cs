@@ -43,22 +43,17 @@ public interface IDynamoDbClientWrapper
     /// <summary>
     ///     Executes a <see cref="DeleteItemRequest" /> which removes the provided entity from a table.
     /// </summary>
-    /// <param name="tableName">The table.</param>
     /// <param name="updateEntry">The entry that contains the information on the entity.</param>
     /// <returns><see langword="true" /> if the operation succeeds; otherwise, <see langword="false" />.</returns>
-    bool DeleteDocument(string tableName, IUpdateEntry updateEntry);
+    bool DeleteDocument(IUpdateEntry updateEntry);
 
     /// <summary>
     ///     Executes a <see cref="DeleteItemRequest" /> which removes the provided entity from a table.
     /// </summary>
-    /// <param name="tableName">The table.</param>
     /// <param name="updateEntry">The entry that contains the information on the entity.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns><see langword="true" /> if the operation succeeds; otherwise, <see langword="false" />.</returns>
-    Task<bool> DeleteDocumentAsync(
-        string tableName,
-        IUpdateEntry updateEntry,
-        CancellationToken cancellationToken = default);
+    Task<bool> DeleteDocumentAsync(IUpdateEntry updateEntry, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Executes a <see cref="PutItemRequest" /> which creates or updates the provided document.
@@ -102,8 +97,8 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
     public bool CreateTable(string tableName, DynamoDbKeySchema keySchema, ProvisionedThroughput? provisionedThroughput)
         => CreateTableAsync(tableName, keySchema, provisionedThroughput).GetAwaiter().GetResult();
 
-    public bool DeleteDocument(string tableName, IUpdateEntry updateEntry) =>
-        DeleteDocumentAsync(tableName, updateEntry).GetAwaiter().GetResult();
+    public bool DeleteDocument(IUpdateEntry updateEntry) =>
+        DeleteDocumentAsync(updateEntry).GetAwaiter().GetResult();
 
     public bool Upsert(string tableName, Document document) =>
         UpsertAsync(tableName, document).GetAwaiter().GetResult();
@@ -119,10 +114,16 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
             null,
             cancellationToken);
 
-    public Task<bool> DeleteDocumentAsync(
-        string tableName,
+    public async Task<bool> DeleteDocumentAsync(
         IUpdateEntry updateEntry,
-        CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        CancellationToken cancellationToken = default)
+    {
+        return await _executionStrategy.ExecuteAsync(
+            (updateEntry, _dynamoDbClient),
+            DeleteDocumentInternalAsync,
+            null,
+            cancellationToken);
+    }
 
     public Task<bool> UpsertAsync(string tableName, Document document, CancellationToken cancellationToken = default) =>
         _executionStrategy.ExecuteAsync(
@@ -176,10 +177,10 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
 
     private static async Task<bool> DeleteDocumentInternalAsync(
         DbContext _,
-        (string tableName, IUpdateEntry updateEntry, IAmazonDynamoDB dynamoDbClient) state,
+        (IUpdateEntry updateEntry, IAmazonDynamoDB dynamoDbClient) state,
         CancellationToken cancellationToken = default)
     {
-        var (tableName, updateEntry, dynamoDbClient) = state;
+        var (updateEntry, dynamoDbClient) = state;
         var entityType = updateEntry.EntityType;
         
         var partitionKeyPropertyName = entityType.GetPartitionKeyPropertyName() ??
@@ -201,7 +202,7 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
 
         var deleteItemRequest = new DeleteItemRequest
         {
-            TableName = tableName,
+            TableName = entityType.GetTableName(),
             Key = key
         };
 
