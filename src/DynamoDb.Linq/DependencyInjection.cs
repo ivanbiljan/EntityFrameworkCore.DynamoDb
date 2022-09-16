@@ -1,9 +1,11 @@
-﻿using System.Reflection;
+﻿using System.Linq.Expressions;
+using System.Reflection;
 using DynamoDb.Linq.Infrastructure;
 using DynamoDb.Linq.Infrastructure.Interop;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query;
@@ -69,6 +71,8 @@ internal class DynamoDbQueryTranslationPostprocessorFactory : QueryTranslationPo
 
 internal class DynamoDbQueryCompilationContextFactory : QueryCompilationContextFactory
 {
+    private QueryCompilationContextDependencies _dependencies;
+
     public DynamoDbQueryCompilationContextFactory(QueryCompilationContextDependencies dependencies) : base(dependencies)
     {
     }
@@ -88,7 +92,13 @@ internal class DynamoDbShapedQueryCompilingExpressionVisitorFactory : IShapedQue
 
 internal class DynamoDbQueryableMethodTranslatingExpressionVisitorFactory : IQueryableMethodTranslatingExpressionVisitorFactory
 {
-    public QueryableMethodTranslatingExpressionVisitor Create(QueryCompilationContext queryCompilationContext) => throw new NotImplementedException();
+    private QueryableMethodTranslatingExpressionVisitorDependencies _dependencies;
+    private QueryCompilationContext _queryCompilationContext;
+
+    public QueryableMethodTranslatingExpressionVisitor Create(QueryCompilationContext queryCompilationContext)
+    {
+        return null;
+    }
 }
 
 internal class DynamoDbValueGeneratorSelector : ValueGeneratorSelector
