@@ -1,11 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore.Query;
+﻿using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace DynamoDb.Linq;
 
-internal class DynamoDbQueryCompilationContextFactory : IQueryCompilationContextFactory
+[UsedImplicitly]
+internal sealed class DynamoDbQueryCompilationContextFactory : IQueryCompilationContextFactory
 {
-    private QueryCompilationContextDependencies _dependencies;
+    private readonly QueryCompilationContextDependencies _dependencies;
 
     public DynamoDbQueryCompilationContextFactory(QueryCompilationContextDependencies dependencies)
     {

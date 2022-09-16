@@ -3,9 +3,22 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace DynamoDb.Linq;
 
-internal class DynamoDbQueryTranslationPostprocessorFactory : QueryTranslationPostprocessorFactory
+internal class DynamoDbQueryTranslationPostprocessorFactory : IQueryTranslationPostprocessorFactory
 {
-    public DynamoDbQueryTranslationPostprocessorFactory(QueryTranslationPostprocessorDependencies dependencies) : base(dependencies)
+    private readonly QueryTranslationPostprocessorDependencies _dependencies;
+
+    public DynamoDbQueryTranslationPostprocessorFactory(QueryTranslationPostprocessorDependencies dependencies)
+    {
+        _dependencies = dependencies;
+    }
+
+    public QueryTranslationPostprocessor Create(QueryCompilationContext queryCompilationContext) =>
+        new DynamoDbQueryTranslationPostprocessor(_dependencies, queryCompilationContext);
+}
+
+internal sealed class DynamoDbQueryTranslationPostprocessor : QueryTranslationPostprocessor
+{
+    public DynamoDbQueryTranslationPostprocessor(QueryTranslationPostprocessorDependencies dependencies, QueryCompilationContext queryCompilationContext) : base(dependencies, queryCompilationContext)
     {
     }
 }
