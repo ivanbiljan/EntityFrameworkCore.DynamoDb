@@ -37,18 +37,21 @@ public static class DependencyInjection
             .TryAdd<IValueGeneratorSelector, DynamoDbValueGeneratorSelector>()
             .TryAdd<IQueryContextFactory, DynamoDbQueryContextFactory>()
             .TryAdd<ITypeMappingSource, DynamoDbTypeMappingSource>()
-            .TryAdd<IQueryableMethodTranslatingExpressionVisitorFactory, DynamoDbQueryableMethodTranslatingExpressionVisitorFactory>()
-            .TryAdd<IShapedQueryCompilingExpressionVisitorFactory, DynamoDbShapedQueryCompilingExpressionVisitorFactory>()
+            .TryAdd<IQueryableMethodTranslatingExpressionVisitorFactory,
+                DynamoDbQueryableMethodTranslatingExpressionVisitorFactory>()
+            .TryAdd<IShapedQueryCompilingExpressionVisitorFactory,
+                DynamoDbShapedQueryCompilingExpressionVisitorFactory>()
             .TryAdd<IQueryTranslationPreprocessorFactory, DynamoDbQueryTranslationPreprocessorFactory>()
             .TryAdd<IQueryCompilationContextFactory, DynamoDbQueryCompilationContextFactory>()
             .TryAdd<IQueryTranslationPostprocessorFactory, DynamoDbQueryTranslationPostprocessorFactory>()
-            .TryAdd<ISingletonOptions, IDynamoDbSingletonOptions>(provider => provider.GetRequiredService<IDynamoDbSingletonOptions>());
+            .TryAdd<ISingletonOptions, IDynamoDbSingletonOptions>(
+                provider => provider.GetRequiredService<IDynamoDbSingletonOptions>());
 
         builder.TryAddProviderSpecificServices(
             map =>
             {
                 map.TryAddSingleton<IDynamoDbSingletonOptions, DynamoDbSingletonOptions>();
-                map.TryAddSingleton<IDynamoDbClientWrapper, DynamoDbClientWrapper>();
+                map.TryAddScoped<IDynamoDbClientWrapper, DynamoDbClientWrapper>();
             });
 
         builder.TryAddCoreServices();

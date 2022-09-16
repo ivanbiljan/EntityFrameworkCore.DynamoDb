@@ -72,7 +72,6 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
         }
 
         _dynamoDbClient = new AmazonDynamoDBClient(options.AccessKey, options.SecretKey, clientConfig);
-
         _executionStrategy = executionStrategyFactory.Create();
     }
 
@@ -85,16 +84,10 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
         ProvisionedThroughput? provisionedThroughput,
         CancellationToken cancellationToken = default)
     {
-        // TODO: figure out why this throws an NRE
-        // return _executionStrategy.ExecuteAsync(
-        //     (tableName, keySchema, provisionedThroughput, _dynamoDbClient),
-        //     CreateTableOnceAsync,
-        //     null,
-        //     cancellationToken);
-
-        return CreateTableOnceAsync(
-            null,
+        return _executionStrategy.ExecuteAsync(
             (tableName, keySchema, provisionedThroughput, _dynamoDbClient),
+            CreateTableOnceAsync,
+            null,
             cancellationToken);
     }
 
@@ -102,14 +95,11 @@ internal sealed class DynamoDbClientWrapper : IDynamoDbClientWrapper
 
     public Task<bool> UpsertAsync(string tableName, Document document, CancellationToken cancellationToken = default)
     {
-        // TODO: figure out why this throws an NRE
-        // return _executionStrategy.ExecuteAsync(
-        //     (tableName, document, _dynamoDbClient),
-        //     UpsertDocumentOnceAsync,
-        //     null,
-        //     cancellationToken);
-
-        return UpsertDocumentOnceAsync(null, (tableName, document, _dynamoDbClient), cancellationToken);
+        return _executionStrategy.ExecuteAsync(
+            (tableName, document, _dynamoDbClient),
+            UpsertDocumentOnceAsync,
+            null,
+            cancellationToken);
     }
 
     private static async Task<bool> UpsertDocumentOnceAsync(
