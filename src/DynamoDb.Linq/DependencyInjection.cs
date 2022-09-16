@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,58 +58,5 @@ public static class DependencyInjection
         builder.TryAddCoreServices();
 
         return serviceCollection;
-    }
-}
-
-internal class DynamoDbQueryTranslationPostprocessorFactory : QueryTranslationPostprocessorFactory
-{
-    public DynamoDbQueryTranslationPostprocessorFactory(QueryTranslationPostprocessorDependencies dependencies) : base(dependencies)
-    {
-    }
-}
-
-internal class DynamoDbQueryCompilationContextFactory : QueryCompilationContextFactory
-{
-    private QueryCompilationContextDependencies _dependencies;
-
-    public DynamoDbQueryCompilationContextFactory(QueryCompilationContextDependencies dependencies) : base(dependencies)
-    {
-    }
-}
-
-internal class DynamoDbQueryTranslationPreprocessorFactory : QueryTranslationPreprocessorFactory
-{
-    public DynamoDbQueryTranslationPreprocessorFactory(QueryTranslationPreprocessorDependencies dependencies) : base(dependencies)
-    {
-    }
-}
-
-internal class DynamoDbShapedQueryCompilingExpressionVisitorFactory : IShapedQueryCompilingExpressionVisitorFactory
-{
-    public ShapedQueryCompilingExpressionVisitor Create(QueryCompilationContext queryCompilationContext) => throw new NotImplementedException();
-}
-
-internal class DynamoDbQueryableMethodTranslatingExpressionVisitorFactory : IQueryableMethodTranslatingExpressionVisitorFactory
-{
-    private QueryableMethodTranslatingExpressionVisitorDependencies _dependencies;
-    private QueryCompilationContext _queryCompilationContext;
-
-    public QueryableMethodTranslatingExpressionVisitor Create(QueryCompilationContext queryCompilationContext)
-    {
-        return null;
-    }
-}
-
-internal class DynamoDbValueGeneratorSelector : ValueGeneratorSelector
-{
-    public DynamoDbValueGeneratorSelector(ValueGeneratorSelectorDependencies dependencies) : base(dependencies)
-    {
-    }
-}
-
-internal class DynamoDbConventionSetBuilder : ProviderConventionSetBuilder
-{
-    public DynamoDbConventionSetBuilder(ProviderConventionSetBuilderDependencies dependencies) : base(dependencies)
-    {
     }
 }
