@@ -1,11 +1,8 @@
 ﻿using System.Linq.Expressions;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using DynamoDb.Linq.Extensions;
-using DynamoDb.Linq.Helpers;
 using DynamoDb.Linq.Infrastructure.Interop;
+using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Query;
@@ -30,7 +27,8 @@ internal sealed class DynamoTableDescriptor
     public ProvisionedThroughput? Throughput { get; }
 }
 
-public sealed class DynamoDbDatabaseCreator : IDatabaseCreator
+[UsedImplicitly]
+internal sealed class DynamoDbDatabaseCreator : IDatabaseCreator
 {
     private readonly IDatabase _database;
     private readonly IUpdateAdapterFactory _updateAdapterFactory;
@@ -190,90 +188,5 @@ public sealed class DynamoDbDatabaseCreator : IDatabaseCreator
         }
 
         return updateAdapter;
-    }
-}
-
-public sealed class DynamoDbDatabase : Database
-{
-    private readonly IDynamoDbClientWrapper _dynamoDbClientWrapper;
-    
-    public DynamoDbDatabase(DatabaseDependencies dependencies, IDynamoDbClientWrapper dynamoDbClientWrapper) : base(dependencies)
-    {
-        _dynamoDbClientWrapper = dynamoDbClientWrapper;
-    }
-
-    public override int SaveChanges(IList<IUpdateEntry> entries)
-    {
-        return entries.Count(Save);
-    }
-
-    public override Task<int> SaveChangesAsync(IList<IUpdateEntry> entries, CancellationToken cancellationToken = new CancellationToken()) => throw new NotImplementedException();
-
-    private bool Save(IUpdateEntry entry)
-    {
-        var entryToDynamoDocument = ConvertEntryToDynamoDocument(entry);
-
-        return _dynamoDbClientWrapper.Upsert(entry.EntityType.GetTableName(), entryToDynamoDocument);
-        
-        switch (entry.EntityState)
-        {
-            case EntityState.Detached:
-                break;
-            case EntityState.Unchanged:
-                break;
-            case EntityState.Deleted:
-                break;
-            case EntityState.Modified:
-                break;
-            case EntityState.Added:
-            {
-                var entryAsDocument = ConvertEntryToDynamoDocument(entry);
-
-                return _dynamoDbClientWrapper.Upsert(entry.EntityType.GetTableName(), entryAsDocument);
-            }
-            default:
-                return false;
-        }
-
-        return false;
-    }
-
-    private static Document ConvertEntryToDynamoDocument(IUpdateEntry updateEntry)
-    {
-        var jsonObject = new JsonObject();
-        var entityType = updateEntry.EntityType;
-        foreach (var property in entityType.GetProperties())
-        {
-            var attributeName = property.GetDynamoDbAttributeName();
-            var attributeValue = updateEntry.GetCurrentProviderValue(property);
-
-            jsonObject[attributeName] = attributeValue is null
-                ? null
-                : JsonSerializer.SerializeToNode(attributeValue, JsonHelpers.DefaultSerializerOptions)!.AsValue();
-        }
-
-        return Document.FromJson(jsonObject.ToJsonString());
-    }
-
-    private JsonObject UpdateJsonObject(JsonObject sourceObject, IUpdateEntry updateEntry)
-    {
-        var resultObject = new JsonObject(sourceObject);
-        var entityType = updateEntry.EntityType;
-        foreach (var property in entityType.GetProperties())
-        {
-            if (updateEntry.EntityState != EntityState.Added && !updateEntry.IsModified(property))
-            {
-                continue;
-            }
-            
-            var attributeName = property.GetDynamoDbAttributeName();
-            var attributeValue = updateEntry.GetCurrentProviderValue(property);
-
-            resultObject[attributeName] = attributeValue is null
-                ? null
-                : JsonSerializer.SerializeToNode(attributeName, JsonHelpers.DefaultSerializerOptions);
-        }
-
-        return resultObject;
     }
 }
