@@ -43,10 +43,6 @@ internal sealed class DynamoDbDatabase : Database
 
     private bool Save(IUpdateEntry entry)
     {
-        var e = ConvertEntryToDynamoDocument(entry);
-
-        return _dynamoDbClientWrapper.Upsert(entry.EntityType.GetTableName(), e);
-        
         switch (entry.EntityState)
         {
             case EntityState.Detached:
