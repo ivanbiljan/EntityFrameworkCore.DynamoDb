@@ -11,7 +11,7 @@ namespace DynamoDb.Linq.Syntax.Expressions;
 ///     </see>
 ///     for more information.
 /// </summary>
-public sealed class SelectExpression : Expression
+public sealed class PartiQLSelectExpression : Expression
 {
     /// <summary>
     ///     Gets an expression that represents the table (essentially the <see cref="IEntityType" />) the data is requested

@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using DynamoDb.Linq.Syntax.Expressions;
 using Microsoft.EntityFrameworkCore.Storage;
+#pragma warning disable CS8603
 
 namespace DynamoDb.Linq.Compilation;
 
@@ -40,7 +41,16 @@ internal sealed class PartiQLTranslatingExpressionVisitor : ExpressionVisitor
 
     protected override Expression VisitUnary(UnaryExpression node)
     {
-        var operand = Visit(node) as PartiQLExpression;
+        if (Visit(node.Operand) is not PartiQLExpression operand)
+        {
+            return null;
+        }
+
+        switch (node.NodeType)
+        {
+            case ExpressionType.Not:
+                return _partiQLExpressionFactory.Not(operand);
+        }
 
         return operand;
     }

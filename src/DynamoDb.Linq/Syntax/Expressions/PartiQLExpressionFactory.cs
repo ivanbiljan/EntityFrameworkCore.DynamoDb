@@ -74,12 +74,19 @@ internal interface IPartiQLExpressionFactory
     PartiQLBinaryExpression NotEqual(PartiQLExpression left, PartiQLExpression right);
     
     /// <summary>
-    /// Produces a PartiQL OrElse (||) expression. In DynamoDb terms this is the OR operator.
+    /// Produces a PartiQL OrElse (||) expression. In DynamoDb terms this is the &lt;&gt; operator.
     /// </summary>
     /// <param name="left">The first operand.</param>
     /// <param name="right">The second operand.</param>
     /// <returns>The <see cref="PartiQLBinaryExpression"/>.</returns>
     PartiQLBinaryExpression OrElse(PartiQLExpression left, PartiQLExpression right);
+
+    /// <summary>
+    /// Produces a PartiQL Not (!) expression. In DynamoDb terms this is the NOT operator.
+    /// </summary>
+    /// <param name="operand">The operand.</param>
+    /// <returns>The <see cref="PartiQLUnaryExpression"/>.</returns>
+    PartiQLUnaryExpression Not(PartiQLExpression operand);
 }
 
 
@@ -123,4 +130,7 @@ internal class PartiQLExpressionFactory : IPartiQLExpressionFactory
     /// <inheritdoc />
     public PartiQLBinaryExpression OrElse(PartiQLExpression left, PartiQLExpression right) =>
         new(left, ExpressionType.OrElse, right, null);
+
+    /// <inheritdoc />
+    public PartiQLUnaryExpression Not(PartiQLExpression operand) => new(ExpressionType.Not, operand, null);
 }
