@@ -12,11 +12,6 @@ public abstract class PartiQLExpression : Expression, IPrintableExpression
         TypeMapping = typeMapping;
     }
 
-    protected PartiQLExpression()
-    {
-        throw new NotImplementedException();
-    }
-
     public sealed override ExpressionType NodeType
         => ExpressionType.Extension;
 

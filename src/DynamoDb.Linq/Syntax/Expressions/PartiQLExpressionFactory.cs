@@ -90,27 +90,27 @@ internal class PartiQLExpressionFactory : IPartiQLExpressionFactory
 {
     /// <inheritdoc />
     public PartiQLBinaryExpression AndAlso(PartiQLExpression left, PartiQLExpression right) =>
-        new(left, ExpressionType.AndAlso, right);
+        new(left, ExpressionType.AndAlso, right, null);
 
     /// <inheritdoc />
     public PartiQLBinaryExpression Equal(PartiQLExpression left, PartiQLExpression right) =>
-        new(left, ExpressionType.Equal, right);
+        new(left, ExpressionType.Equal, right, null);
 
     /// <inheritdoc />
     public PartiQLBinaryExpression GreaterThan(PartiQLExpression left, PartiQLExpression right) =>
-        new(left, ExpressionType.GreaterThan, right);
+        new(left, ExpressionType.GreaterThan, right, null);
 
     /// <inheritdoc />
     public PartiQLBinaryExpression GreaterThanOrEqual(PartiQLExpression left, PartiQLExpression right) =>
-        new(left, ExpressionType.GreaterThanOrEqual, right);
+        new(left, ExpressionType.GreaterThanOrEqual, right, null);
 
     /// <inheritdoc />
     public PartiQLBinaryExpression LessThan(PartiQLExpression left, PartiQLExpression right) =>
-        new(left, ExpressionType.LessThan, right);
+        new(left, ExpressionType.LessThan, right, null);
 
     /// <inheritdoc />
     public PartiQLBinaryExpression LessThanOrEqual(PartiQLExpression left, PartiQLExpression right) =>
-        new(left, ExpressionType.LessThanOrEqual, right);
+        new(left, ExpressionType.LessThanOrEqual, right, null);
     
     /// <inheritdoc />
     public PartiQLConstantExpression MakeConstant(object value, CoreTypeMapping? coreTypeMapping) =>
@@ -118,9 +118,9 @@ internal class PartiQLExpressionFactory : IPartiQLExpressionFactory
 
     /// <inheritdoc />
     public PartiQLBinaryExpression NotEqual(PartiQLExpression left, PartiQLExpression right) =>
-        new(left, ExpressionType.NotEqual, right);
+        new(left, ExpressionType.NotEqual, right, null);
 
     /// <inheritdoc />
     public PartiQLBinaryExpression OrElse(PartiQLExpression left, PartiQLExpression right) =>
-        new(left, ExpressionType.OrElse, right);
+        new(left, ExpressionType.OrElse, right, null);
 }

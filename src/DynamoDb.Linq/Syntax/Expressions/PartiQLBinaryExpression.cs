@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DynamoDb.Linq.Syntax.Expressions;
 
@@ -14,7 +15,12 @@ public sealed class PartiQLBinaryExpression : PartiQLExpression
     /// <param name="left">The left side of the expression.</param>
     /// <param name="operator">The operator.</param>
     /// <param name="right">The right side of the expression.</param>
-    public PartiQLBinaryExpression(PartiQLExpression left, ExpressionType @operator, PartiQLExpression right)
+    /// <param name="typeMapping">The type mapping.</param>
+    public PartiQLBinaryExpression(
+        PartiQLExpression left,
+        ExpressionType @operator,
+        PartiQLExpression right,
+        CoreTypeMapping? typeMapping) : base(left.Type, typeMapping)
     {
         Left = left;
         Operator = @operator;
@@ -50,7 +56,7 @@ public sealed class PartiQLBinaryExpression : PartiQLExpression
 
         if (left != Left || right != Right)
         {
-            return new PartiQLBinaryExpression(left, Operator, right);
+            return new PartiQLBinaryExpression(left, Operator, right, TypeMapping);
         }
 
         return this;
