@@ -50,6 +50,8 @@ internal sealed class PartiQLTranslatingExpressionVisitor : ExpressionVisitor
         {
             case ExpressionType.Not:
                 return _partiQLExpressionFactory.Not(operand);
+            case ExpressionType.Negate:
+                return _partiQLExpressionFactory.Negate(operand);
         }
 
         return operand;

@@ -17,7 +17,7 @@ public sealed class PartiQLQuery
     }
 
     /// <summary>
-    ///     Gets a list of <see cref="PartiQLParameter" /> that will be substituted when the <see cref="Query" /> is executed.
+    ///     Gets a list of <see cref="PartiQLParameter" />s that will be substituted when the <see cref="Query" /> is executed.
     /// </summary>
     public IList<PartiQLParameter> Parameters { get; }
 
