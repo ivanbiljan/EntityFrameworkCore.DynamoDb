@@ -39,6 +39,10 @@ internal sealed class PartiQLTranslatingExpressionVisitor : ExpressionVisitor
         return partiQLExpression;
     }
 
+    /// <inheritdoc />
+    protected override Expression VisitConstant(ConstantExpression node) => new PartiQLConstantExpression(node, null);
+
+    /// <inheritdoc />
     protected override Expression VisitUnary(UnaryExpression node)
     {
         if (Visit(node.Operand) is not PartiQLExpression operand)
