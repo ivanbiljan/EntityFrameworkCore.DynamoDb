@@ -1,5 +1,8 @@
 ﻿using System.Linq.Expressions;
 using EntityFrameworkCore.DynamoDb.Syntax.Expressions;
+using EntityFrameworkCore.DynamoDb.Syntax.MethodTranslators;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
 #pragma warning disable CS8603
 
@@ -12,11 +15,21 @@ namespace EntityFrameworkCore.DynamoDb.Compilation;
 internal sealed class PartiQLTranslatingExpressionVisitor : ExpressionVisitor
 {
     private readonly IPartiQLExpressionFactory _partiQLExpressionFactory;
+    private readonly IMethodCallTranslatorProvider _methodCallTranslatorProvider;
+    private readonly QueryCompilationContext _queryCompilationContext;
+    private readonly IModel _model;
 
-    public PartiQLTranslatingExpressionVisitor(IPartiQLExpressionFactory partiQLExpressionFactory)
+    public PartiQLTranslatingExpressionVisitor(IPartiQLExpressionFactory partiQLExpressionFactory, IMethodCallTranslatorProvider methodCallTranslatorProvider, IModel model)
     {
         _partiQLExpressionFactory = partiQLExpressionFactory;
+        _methodCallTranslatorProvider = methodCallTranslatorProvider;
+        _model = model;
     }
+    
+    /// <summary>
+    /// Gets detailed information about errors encountered during translation.
+    /// </summary>
+    public string? TranslationErrorDetails { get; private set; }
 
     /// <summary>
     /// Translates the provided expression into the equivalent PartiQL expression.
@@ -25,6 +38,8 @@ internal sealed class PartiQLTranslatingExpressionVisitor : ExpressionVisitor
     /// <returns>The parsed expression.</returns>
     public PartiQLExpression? Translate(Expression? expression)
     {
+        TranslationErrorDetails = null;
+        
         if (expression is null)
         {
             return null;
@@ -35,6 +50,8 @@ internal sealed class PartiQLTranslatingExpressionVisitor : ExpressionVisitor
         {
             return null;
         }
+        
+        partiQLExpression = _partiQLExpressionFactory.apply
 
         return partiQLExpression;
     }
@@ -59,5 +76,12 @@ internal sealed class PartiQLTranslatingExpressionVisitor : ExpressionVisitor
         }
 
         return operand;
+    }
+
+    protected override Expression VisitMethodCall(MethodCallExpression node)
+    {
+        var translation = _methodCallTranslatorProvider.Translate()
+        
+        return base.VisitMethodCall(node);
     }
 }
