@@ -50,8 +50,6 @@ internal sealed class PartiQLTranslatingExpressionVisitor : ExpressionVisitor
         {
             return null;
         }
-        
-        partiQLExpression = _partiQLExpressionFactory.apply
 
         return partiQLExpression;
     }
@@ -80,8 +78,24 @@ internal sealed class PartiQLTranslatingExpressionVisitor : ExpressionVisitor
 
     protected override Expression VisitMethodCall(MethodCallExpression node)
     {
-        var translation = _methodCallTranslatorProvider.Translate()
+        var instance = Translate(node.Object);
+        if (instance is null)
+        {
+            return null;
+        }
         
-        return base.VisitMethodCall(node);
+        var arguments = new PartiQLExpression[node.Arguments.Count];
+        for (var i = 0; i < arguments.Length; ++i)
+        {
+            var translatedArgument = Translate(node.Arguments[i]);
+            if (translatedArgument is null)
+            {
+                return null;
+            }
+
+            arguments[i] = translatedArgument;
+        }
+
+        return _methodCallTranslatorProvider.Translate(_model, instance, node.Method, arguments);
     }
 }

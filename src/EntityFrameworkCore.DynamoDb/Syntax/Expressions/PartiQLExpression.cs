@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EntityFrameworkCore.DynamoDb.Syntax.Expressions;
 
-public abstract class PartiQLExpression : Expression, IPrintableExpression
+public class PartiQLExpression : Expression, IPrintableExpression
 {
     protected PartiQLExpression(Type type, CoreTypeMapping? typeMapping)
     {
