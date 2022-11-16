@@ -19,11 +19,12 @@ internal sealed class PartiQLTranslatingExpressionVisitor : ExpressionVisitor
     private readonly QueryCompilationContext _queryCompilationContext;
     private readonly IModel _model;
 
-    public PartiQLTranslatingExpressionVisitor(IPartiQLExpressionFactory partiQLExpressionFactory, IMethodCallTranslatorProvider methodCallTranslatorProvider, IModel model)
+    public PartiQLTranslatingExpressionVisitor(IPartiQLExpressionFactory partiQLExpressionFactory, IMethodCallTranslatorProvider methodCallTranslatorProvider, IModel model, QueryCompilationContext queryCompilationContext)
     {
         _partiQLExpressionFactory = partiQLExpressionFactory;
         _methodCallTranslatorProvider = methodCallTranslatorProvider;
         _model = model;
+        _queryCompilationContext = queryCompilationContext;
     }
     
     /// <summary>
@@ -70,6 +71,7 @@ internal sealed class PartiQLTranslatingExpressionVisitor : ExpressionVisitor
             case ExpressionType.Not:
                 return _partiQLExpressionFactory.Not(operand);
             case ExpressionType.Negate:
+            case ExpressionType.NegateChecked:
                 return _partiQLExpressionFactory.Negate(operand);
         }
 
@@ -78,8 +80,7 @@ internal sealed class PartiQLTranslatingExpressionVisitor : ExpressionVisitor
 
     protected override Expression VisitMethodCall(MethodCallExpression node)
     {
-        var instance = Translate(node.Object);
-        if (instance is null)
+        if (Visit(node.Object) is not PartiQLExpression instance)
         {
             return null;
         }
@@ -87,8 +88,7 @@ internal sealed class PartiQLTranslatingExpressionVisitor : ExpressionVisitor
         var arguments = new PartiQLExpression[node.Arguments.Count];
         for (var i = 0; i < arguments.Length; ++i)
         {
-            var translatedArgument = Translate(node.Arguments[i]);
-            if (translatedArgument is null)
+            if (Visit(node.Arguments[i]) is not PartiQLExpression translatedArgument)
             {
                 return null;
             }
