@@ -12,14 +12,14 @@ namespace EntityFrameworkCore.DynamoDb.Compilation;
 /// Represents a class that takes a LINQ expression tree and translates it into the equivalent PartiQL model.
 /// </summary>
 /// <remarks>This is the second step</remarks>
-internal sealed class PartiQLTranslatingExpressionVisitor : ExpressionVisitor
+internal sealed class LinqExpressionToPartiQLTranslatingExpressionVisitor : ExpressionVisitor
 {
     private readonly IPartiQLExpressionFactory _partiQLExpressionFactory;
     private readonly IMethodCallTranslatorProvider _methodCallTranslatorProvider;
     private readonly QueryCompilationContext _queryCompilationContext;
     private readonly IModel _model;
 
-    public PartiQLTranslatingExpressionVisitor(IPartiQLExpressionFactory partiQLExpressionFactory, IMethodCallTranslatorProvider methodCallTranslatorProvider, IModel model, QueryCompilationContext queryCompilationContext)
+    public LinqExpressionToPartiQLTranslatingExpressionVisitor(IPartiQLExpressionFactory partiQLExpressionFactory, IMethodCallTranslatorProvider methodCallTranslatorProvider, IModel model, QueryCompilationContext queryCompilationContext)
     {
         _partiQLExpressionFactory = partiQLExpressionFactory;
         _methodCallTranslatorProvider = methodCallTranslatorProvider;

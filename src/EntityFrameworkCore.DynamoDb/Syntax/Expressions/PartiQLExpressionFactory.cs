@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using EntityFrameworkCore.DynamoDb.Compilation;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EntityFrameworkCore.DynamoDb.Syntax.Expressions;
@@ -110,6 +111,8 @@ internal interface IPartiQLExpressionFactory
     /// <param name="right">The string to search for.</param>
     /// <returns>The <see cref="PartiQLFunctionExpression"/>.</returns>
     PartiQLFunctionExpression Contains(PartiQLExpression left, PartiQLExpression right);
+
+    SelectExpression Select(IEntityType entityType);
 }
 
 
@@ -178,6 +181,8 @@ internal sealed class PartiQLExpressionFactory : IPartiQLExpressionFactory
         },
         typeof(bool));
 
+    public SelectExpression Select(IEntityType entityType) => new(entityType);
+
     /// <summary>
     /// Produces a PartiQL function call expression.
     /// </summary>
@@ -185,7 +190,7 @@ internal sealed class PartiQLExpressionFactory : IPartiQLExpressionFactory
     /// <param name="arguments">The arguments.</param>
     /// <param name="returnType">The function's return type.</param>
     /// <returns>The <see cref="PartiQLFunctionExpression"/>.</returns>
-    private PartiQLFunctionExpression Function(
+    private static PartiQLFunctionExpression Function(
         string functionName,
         IEnumerable<PartiQLExpression> arguments,
         Type returnType) => new(functionName, arguments, returnType, null);

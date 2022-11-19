@@ -2,6 +2,7 @@
 using System.Reflection;
 using EntityFrameworkCore.DynamoDb.Infrastructure;
 using EntityFrameworkCore.DynamoDb.Infrastructure.Interop;
+using EntityFrameworkCore.DynamoDb.Internal;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -39,7 +40,7 @@ public static class DependencyInjection
             .TryAdd<IQueryContextFactory, DynamoDbQueryContextFactory>()
             .TryAdd<ITypeMappingSource, DynamoDbTypeMappingSource>()
             .TryAdd<IQueryableMethodTranslatingExpressionVisitorFactory,
-                DynamoDbQueryableMethodTranslatingExpressionVisitorFactory>()
+                PartiQLQueryableMethodTranslatingExpressionVisitorFactory>()
             .TryAdd<IShapedQueryCompilingExpressionVisitorFactory,
                 DynamoDbShapedQueryCompilingExpressionVisitorFactory>()
             .TryAdd<IQueryTranslationPreprocessorFactory, DynamoDbQueryTranslationPreprocessorFactory>()
