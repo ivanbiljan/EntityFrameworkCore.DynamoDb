@@ -165,7 +165,7 @@ internal sealed class PartiQLQueryableMethodTranslatingExpressionVisitor : Query
     protected override ShapedQueryExpression TranslateSelect(ShapedQueryExpression source, LambdaExpression selector) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    protected override ShapedQueryExpression? TranslateSelectMany(
+    protected override ShapedQueryExpression? TranslateSelectMany( 
         ShapedQueryExpression source,
         LambdaExpression collectionSelector,
         LambdaExpression resultSelector) =>
@@ -225,5 +225,104 @@ internal sealed class PartiQLQueryableMethodTranslatingExpressionVisitor : Query
             lambdaExpression.Body);
 
         return _partiQLTranslator.Translate(body);
+    }
+}
+
+/// <summary>
+/// Represents an expression visitor that takes a projection expression, translates it and maps it to a provided selector.
+/// </summary>
+internal sealed class PartiQLProjectionBindingExpressionVisitor : ExpressionVisitor
+{
+    private readonly LinqExpressionToPartiQLTranslatingExpressionVisitor _partiQLTranslator;
+    private readonly Stack<ProjectionMember> _projectionMembers = new();
+    private readonly Dictionary<ProjectionMember, Expression> _projectionMemberToExpressionMap = new();
+
+    private SelectExpression _selector;
+
+    public PartiQLProjectionBindingExpressionVisitor(LinqExpressionToPartiQLTranslatingExpressionVisitor partiQLTranslator)
+    {
+        _partiQLTranslator = partiQLTranslator;
+    }
+
+    /// <summary>
+    /// Translates the provided projection expression and binds it to the selector.
+    /// </summary>
+    /// <param name="selector">The selector expression.</param>
+    /// <param name="projectionExpression">The projection expression.</param>
+    /// <returns>The <see cref="ProjectionBindingExpression"/> for the translated projection.</returns>
+    public Expression Translate(SelectExpression selector, Expression projectionExpression)
+    {
+        _selector = selector;
+        _projectionMembers.Push(new ProjectionMember());
+        
+        var translatedProjection = Visit(projectionExpression);
+        if (translatedProjection is null)
+        {
+            throw new InvalidOperationException("Cannot translate projection");
+        }
+        
+        selector.ReplaceProjectionMapping(_projectionMemberToExpressionMap);
+        
+        _projectionMembers.Clear();
+        _projectionMemberToExpressionMap.Clear();
+
+        return translatedProjection;
+    }
+
+    public override Expression? Visit(Expression? node)
+    {
+        if (node is NewExpression or EntityShaperExpression)
+        {
+            return base.Visit(node);
+        }
+
+        var translatedExpression = _partiQLTranslator.Translate(node);
+        if (translatedExpression is null)
+        {
+            return null;
+        }
+        
+        _projectionMemberToExpressionMap[_projectionMembers.Peek()] = translatedExpression;
+
+        return new ProjectionBindingExpression(_selector, _projectionMembers.Peek(), typeof(ValueBuffer));
+    }
+
+    protected override Expression VisitExtension(Expression node)
+    {
+        if (node is not EntityShaperExpression entityShaperExpression)
+        {
+            throw new InvalidOperationException("Expected an entity shaper expression");
+        }
+
+        _projectionMemberToExpressionMap[_projectionMembers.Peek()] = _selector.GetProjection(
+            ((ProjectionBindingExpression)entityShaperExpression.ValueBufferExpression).ProjectionMember);
+
+        return entityShaperExpression.Update(
+            new ProjectionBindingExpression(_selector, _projectionMembers.Peek(), typeof(ValueBuffer)));
+    }
+
+    protected override Expression VisitNew(NewExpression node)
+    {
+        if (node.Arguments.Count == 0)
+        {
+            return node;
+        }
+
+        var translatedArguments = new Expression[node.Arguments.Count];
+        for (var i = 0; i < translatedArguments.Length; ++i)
+        {
+            var projectionMember = _projectionMembers.Peek();
+            _projectionMembers.Push(projectionMember.Append(node.Members[i]));
+
+            var translatedArgument = Visit(node.Arguments[i]);
+            if (translatedArgument is null)
+            {
+                return null;
+            }
+
+            _projectionMembers.Pop();
+        }
+
+        return node.Update(translatedArguments);
     }
 }

@@ -149,4 +149,16 @@ internal sealed class SelectExpression : Expression
             ? filter
             : new PartiQLBinaryExpression(Filter, ExpressionType.AndAlso, filter, filter.TypeMapping);
     }
+
+    public void ReplaceProjectionMapping(IDictionary<ProjectionMember, Expression> projectionMap)
+    {
+        _projectionMemberToExpressionMap.Clear();
+        foreach (var (key, value) in projectionMap)
+        {
+            _projectionMemberToExpressionMap[key] = value;
+        }
+    }
+
+    public Expression? GetProjection(ProjectionMember projectionMember) =>
+        _projectionMemberToExpressionMap.TryGetValue(projectionMember, out var result) ? result : null;
 }
